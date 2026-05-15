@@ -1,0 +1,1 @@
+# bar-responsa-fechamento
