@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fechamento de Caixa — Bar Responsa</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;padding-bottom:2rem}
+  .header{background:#1B3A5C;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+  .header h1{color:#fff;font-size:17px;font-weight:600}
+  .header p{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
+  .logo-circle{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+  .config-panel{display:none;background:#1a1a1a;padding:1rem 1.25rem;border-bottom:2px solid #1B3A5C}
+  .config-panel label{color:#aaa;font-size:13px;display:block;margin-bottom:6px}
+  .config-panel input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #444;background:#2a2a2a;color:#fff;font-size:14px;font-family:inherit;margin-bottom:8px}
+  .config-panel button{width:100%;padding:10px;background:#1B3A5C;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+  .content{padding:1rem;max-width:520px;margin:0 auto}
+  .card{background:#fff;border-radius:12px;border:1px solid #e5e5e0;padding:1rem 1.25rem;margin-bottom:1rem}
+  .sec-title{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem}
+  .field{margin-bottom:1rem}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-size:14px;color:#555;margin-bottom:5px;font-weight:500}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;color:#1a1a1a;background:#fff;-webkit-appearance:none;outline:none;font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:#1B3A5C;box-shadow:0 0 0 3px rgba(27,58,92,.12)}
+  .field textarea{resize:vertical;min-height:80px;line-height:1.5}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  .radio-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid #e5e5e0;border-radius:10px;cursor:pointer;margin-bottom:10px;transition:all .15s}
+  .radio-opt input[type=radio]{width:18px;height:18px;flex-shrink:0}
+  .radio-opt span{font-size:15px;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+  .radio-opt.sel-ok{border-color:#1D9E75;background:#f0faf6}
+  .radio-opt.sel-err{border-color:#E24B4A;background:#fff5f5}
+  .btn-primary{width:100%;padding:14px;background:#1B3A5C;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.5rem;font-family:inherit}
+  .btn-primary:active{transform:scale(.98)}
+  .btn-secondary{width:100%;padding:12px;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:10px;font-size:15px;cursor:pointer;margin-top:.75rem;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-add{width:100%;padding:11px;background:#f0f6ff;color:#1B3A5C;border:1.5px dashed #1B3A5C;border-radius:10px;font-size:14px;cursor:pointer;margin-top:.5rem;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500}
+  .btn-add:active{background:#dce9f7}
+  .btn-pdf{background:#185FA5}
+  .proto-badge{display:inline-flex;align-items:center;gap:6px;background:#E6F1FB;color:#0C447C;font-size:14px;font-weight:600;padding:6px 16px;border-radius:20px;margin-bottom:1rem}
+  .tag-ok{background:#E1F5EE;color:#0F6E56;font-size:13px;padding:4px 12px;border-radius:20px;font-weight:500;display:inline-block}
+  .tag-err{background:#FCEBEB;color:#A32D2D;font-size:13px;padding:4px 12px;border-radius:20px;font-weight:500;display:inline-block}
+  .divider{border:none;border-top:1px solid #f0f0ec;margin:1rem 0}
+  .foto-area{border:2px dashed #ccc;border-radius:10px;padding:1.25rem;text-align:center;cursor:pointer;background:#fafafa;transition:border-color .15s}
+  .foto-area:hover{border-color:#1B3A5C}
+  .foto-area p{font-size:13px;color:#888;margin-top:6px;line-height:1.5}
+  .fotos-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .fotos-grid img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e5e5e0}
+  .operador-card{background:#f8f9ff;border:1px solid #d0dff5;border-radius:10px;padding:1rem;margin-bottom:.75rem;position:relative}
+  .operador-card .remove-btn{position:absolute;top:10px;right:10px;background:none;border:none;color:#E24B4A;cursor:pointer;font-size:18px;padding:2px 6px}
+  .operador-num{font-size:12px;font-weight:600;color:#1B3A5C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+  .resumo-row{display:flex;padding:7px 0;border-bottom:1px solid #f0f0ec;font-size:14px}
+  .resumo-row:last-child{border-bottom:none}
+  .resumo-label{color:#888;width:44%;flex-shrink:0;font-size:13px}
+  .resumo-val{color:#1a1a1a;font-weight:500;word-break:break-word}
+  .success-icon{text-align:center;padding:1.5rem 0 .5rem}
+  .success-icon i{font-size:52px;color:#1B3A5C}
+  .success-icon h2{font-size:19px;font-weight:600;margin-top:.5rem}
+  .success-icon p{font-size:14px;color:#888;margin-top:4px}
+  .sheets-status{margin-top:.75rem;font-size:13px;text-align:center;min-height:20px}
+  .valor-money{font-size:22px;font-weight:700;color:#1B3A5C;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-circle" onclick="logoTap()">
+    <i class="ti ti-report-money" style="color:#fff;font-size:20px"></i>
+  </div>
+  <div>
+    <h1>Bar Responsa</h1>
+    <p>Fechamento de caixa — gerente</p>
+  </div>
+</div>
+
+<div id="config-panel" class="config-panel">
+  <label>URL do Apps Script</label>
+  <input type="url" id="sheets-url-input" placeholder="https://script.google.com/macros/s/..." />
+  <button onclick="salvarURLConfig()">Salvar URL</button>
+  <div id="config-status" style="font-size:13px;margin-top:6px;text-align:center;min-height:18px"></div>
+</div>
+
+<div class="content">
+
+<div id="form-screen">
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="card">
+    <div class="sec-title">Identificação</div>
+    <div class="field">
+      <label>Data do fechamento</label>
+      <input type="date" id="data" />
+    </div>
+    <div class="field">
+      <label>Nome do gerente</label>
+      <input type="text" id="gerente" placeholder="Nome completo" />
+    </div>
+  </div>
+
+  <!-- EVIDÊNCIAS DO DIA -->
+  <div class="card">
+    <div class="sec-title">Relatório de turno — Colibri</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem;line-height:1.5">Foto do relatório de turno gerado no sistema Colibri.</p>
+    <div class="foto-area" onclick="document.getElementById('inp-colibri').click()">
+      <i class="ti ti-report" style="font-size:28px;color:#1B3A5C"></i>
+      <p>Toque para anexar foto do relatório Colibri</p>
+    </div>
+    <input type="file" id="inp-colibri" accept="image/*" multiple style="display:none" onchange="previewFotos(event,'prev-colibri','fotosColibri')" />
+    <div class="fotos-grid" id="prev-colibri"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title">Relatório diário — grupo dos sócios</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem;line-height:1.5">Foto do relatório diário enviado no grupo dos sócios.</p>
+    <div class="foto-area" onclick="document.getElementById('inp-socios').click()">
+      <i class="ti ti-chart-bar" style="font-size:28px;color:#1B3A5C"></i>
+      <p>Toque para anexar foto do relatório diário</p>
+    </div>
+    <input type="file" id="inp-socios" accept="image/*" multiple style="display:none" onchange="previewFotos(event,'prev-socios','fotosSocios')" />
+    <div class="fotos-grid" id="prev-socios"></div>
+  </div>
+
+  <!-- VALOR EM DINHEIRO -->
+  <div class="card">
+    <div class="sec-title">Valor recebido em dinheiro</div>
+    <div class="field">
+      <label>Total recebido em dinheiro no dia (R$)</label>
+      <input type="number" id="valor-dinheiro" placeholder="0,00" step="0.01" min="0" oninput="atualizaValor()" />
+      <div class="valor-money" id="valor-display" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- STATUS DO CAIXA -->
+  <div class="card">
+    <div class="sec-title">Status do caixa</div>
+    <label class="radio-opt" id="opt-ok">
+      <input type="radio" name="status" value="ok" onchange="setStatus('ok')" style="accent-color:#1D9E75" />
+      <span><i class="ti ti-circle-check" style="color:#1D9E75;font-size:20px"></i>Caixa fechou sem divergência</span>
+    </label>
+    <label class="radio-opt" id="opt-erro">
+      <input type="radio" name="status" value="erro" onchange="setStatus('erro')" style="accent-color:#E24B4A" />
+      <span><i class="ti ti-alert-triangle" style="color:#E24B4A;font-size:20px"></i>Teve divergência</span>
+    </label>
+  </div>
+
+  <!-- OPERADORES COM DIVERGÊNCIA -->
+  <div class="card" id="sec-divergencia" style="display:none">
+    <div class="sec-title">Operadores com divergência</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem;line-height:1.5">Adicione cada operador que teve divergência no caixa.</p>
+    <div id="lista-operadores"></div>
+    <button class="btn-add" onclick="adicionarOperador()">
+      <i class="ti ti-plus"></i> Adicionar operador
+    </button>
+  </div>
+
+  <!-- OBSERVAÇÕES -->
+  <div class="card">
+    <div class="sec-title">Observações</div>
+    <div class="field">
+      <textarea id="obs" placeholder="Informações adicionais, contexto, o que mais aconteceu..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="enviar()">
+    <i class="ti ti-send"></i> Registrar fechamento
+  </button>
+</div>
+
+<!-- TELA DE SUCESSO -->
+<div id="success-screen" style="display:none">
+  <div class="card">
+    <div class="success-icon">
+      <i class="ti ti-circle-check"></i>
+      <h2>Fechamento registrado</h2>
+      <p>Protocolo gerado com sucesso</p>
+    </div>
+    <div style="text-align:center;margin-bottom:1rem" id="proto-area"></div>
+    <div id="resumo-area"></div>
+  </div>
+  <button class="btn-primary btn-pdf" onclick="gerarPDF()">
+    <i class="ti ti-file-type-pdf"></i> Baixar PDF
+  </button>
+  <button class="btn-secondary" onclick="novoRegistro()">
+    <i class="ti ti-plus"></i> Novo registro
+  </button>
+  <div class="sheets-status" id="sheets-status"></div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var statusAtual=null;
+var fotosColibri=[],fotosSocios=[];
+var operadores=[];
+var ultimoProto='';
+var sheetsURL=localStorage.getItem('br_sheets_url')||'https://script.google.com/macros/s/AKfycbyd8nppvPnkg3gB0GY9DdZz3huZJVnnW6ibkgRQOTV6PbpOT7802P1wC1jIda2SMBwyxA/exec';
+
+document.getElementById('data').value=new Date().toISOString().split('T')[0];
+
+// Config oculta — 5 toques no logo
+var tapCount=0,tapTimer=null;
+function logoTap(){
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer=setTimeout(function(){tapCount=0;},1500);
+  if(tapCount>=5){
+    tapCount=0;
+    var panel=document.getElementById('config-panel');
+    panel.style.display=panel.style.display==='block'?'none':'block';
+    var url=localStorage.getItem('br_sheets_url')||'';
+    if(url)document.getElementById('sheets-url-input').value=url;
+  }
+}
+
+function salvarURLConfig(){
+  var url=document.getElementById('sheets-url-input').value.trim();
+  if(!url){alert('Cole a URL do Apps Script.');return;}
+  sheetsURL=url;
+  localStorage.setItem('br_sheets_url',url);
+  document.getElementById('config-status').innerHTML='<span style="color:#1D9E75">URL salva!</span>';
+  setTimeout(function(){document.getElementById('config-panel').style.display='none';},1500);
+}
+
+function setStatus(v){
+  statusAtual=v;
+  document.getElementById('opt-ok').className='radio-opt'+(v==='ok'?' sel-ok':'');
+  document.getElementById('opt-erro').className='radio-opt'+(v==='erro'?' sel-err':'');
+  document.getElementById('sec-divergencia').style.display=v==='erro'?'block':'none';
+}
+
+function atualizaValor(){
+  var v=parseFloat(document.getElementById('valor-dinheiro').value)||0;
+  var el=document.getElementById('valor-display');
+  if(v>0){el.style.display='block';el.textContent='R$ '+v.toFixed(2).replace('.',',');}
+  else{el.style.display='none';}
+}
+
+function previewFotos(e,prevId,arrName){
+  var arr=arrName==='fotosColibri'?fotosColibri:fotosSocios;
+  Array.from(e.target.files).forEach(function(f){
+    var r=new FileReader();
+    r.onload=function(ev){
+      arr.push(ev.target.result);
+      var img=document.createElement('img');
+      img.src=ev.target.result;
+      document.getElementById(prevId).appendChild(img);
+    };
+    r.readAsDataURL(f);
+  });
+}
+
+var opCount=0;
+function adicionarOperador(){
+  opCount++;
+  var id='op-'+opCount;
+  operadores.push(id);
+  var div=document.createElement('div');
+  div.className='operador-card';
+  div.id=id;
+  div.innerHTML='<div class="operador-num">Operador '+opCount+'</div>'+
+    '<button class="remove-btn" onclick="removerOperador(\''+id+'\')"><i class="ti ti-x"></i></button>'+
+    '<div class="field"><label>Nome do operador</label><input type="text" id="'+id+'-nome" placeholder="Nome completo do operador" /></div>'+
+    '<div class="field"><label>Valor da diferença (R$)</label><input type="number" id="'+id+'-valor" placeholder="0,00" step="0.01" min="0" /></div>'+
+    '<div class="field"><label>O que possivelmente aconteceu</label><textarea id="'+id+'-motivo" placeholder="Descreva o que pode ter causado a divergência..."></textarea></div>';
+  document.getElementById('lista-operadores').appendChild(div);
+}
+
+function removerOperador(id){
+  var el=document.getElementById(id);
+  if(el)el.remove();
+  operadores=operadores.filter(function(o){return o!==id;});
+}
+
+function getOperadoresData(){
+  var lista=document.getElementById('lista-operadores').querySelectorAll('.operador-card');
+  var result=[];
+  lista.forEach(function(card){
+    var id=card.id;
+    var nome=document.getElementById(id+'-nome').value.trim();
+    var valor=document.getElementById(id+'-valor').value.trim();
+    var motivo=document.getElementById(id+'-motivo').value.trim();
+    if(nome)result.push({nome:nome,valor:valor,motivo:motivo});
+  });
+  return result;
+}
+
+function g(id){return document.getElementById(id).value.trim();}
+
+function gerarProtocolo(){
+  var d=new Date();
+  var dd=String(d.getDate()).padStart(2,'0');
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var yy=String(d.getFullYear()).slice(-2);
+  return 'FCX-'+yy+mm+dd+'-'+String(Math.floor(Math.random()*900)+100);
+}
+
+function enviar(){
+  if(!g('gerente')){alert('Informe o nome do gerente.');return;}
+  if(!g('data')){alert('Informe a data.');return;}
+  if(fotosColibri.length===0){alert('Anexe a foto do relatório Colibri.');return;}
+  if(fotosSocios.length===0){alert('Anexe a foto do relatório diário.');return;}
+  if(!g('valor-dinheiro')){alert('Informe o valor recebido em dinheiro.');return;}
+  if(!statusAtual){alert('Selecione o status do caixa.');return;}
+  if(statusAtual==='erro'){
+    var ops=getOperadoresData();
+    if(ops.length===0){alert('Adicione pelo menos um operador com divergência.');return;}
+  }
+
+  ultimoProto=gerarProtocolo();
+  document.getElementById('proto-area').innerHTML='<span class="proto-badge"><i class="ti ti-hash"></i> '+ultimoProto+'</span>';
+  document.getElementById('resumo-area').innerHTML=montaResumo();
+  document.getElementById('form-screen').style.display='none';
+  document.getElementById('success-screen').style.display='block';
+  if(sheetsURL)enviarSheets();
+}
+
+function montaResumo(){
+  var rows=[
+    ['Data',g('data')],
+    ['Gerente',g('gerente')],
+    ['Valor em dinheiro','R$ '+(parseFloat(g('valor-dinheiro'))||0).toFixed(2).replace('.',',')],
+    ['Fotos Colibri',fotosColibri.length+' foto(s)'],
+    ['Fotos relatório',fotosSocios.length+' foto(s)'],
+    ['Status',statusAtual==='ok'?'<span class="tag-ok">Sem divergência</span>':'<span class="tag-err">Com divergência</span>']
+  ];
+  if(statusAtual==='erro'){
+    var ops=getOperadoresData();
+    ops.forEach(function(op,i){
+      rows.push(['Operador '+(i+1),op.nome]);
+      if(op.valor)rows.push(['Diferença','R$ '+(parseFloat(op.valor)||0).toFixed(2).replace('.',',')]);
+      if(op.motivo)rows.push(['Motivo',op.motivo]);
+    });
+  }
+  if(g('obs'))rows.push(['Observações',g('obs')]);
+  return rows.map(function(r){
+    return '<div class="resumo-row"><span class="resumo-label">'+r[0]+'</span><span class="resumo-val">'+r[1]+'</span></div>';
+  }).join('');
+}
+
+function gerarPDFbase64(){
+  var doc=new jspdf.jsPDF({unit:'mm',format:'a4'});
+  var y=18;
+  doc.setFillColor(27,58,92);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15);doc.setFont(undefined,'bold');
+  doc.text('Bar Responsa — Fechamento de Caixa',14,13);
+  doc.setFontSize(10);doc.setFont(undefined,'normal');
+  doc.text('Registro de fechamento do gerente',14,21);
+  y=36;doc.setTextColor(0,0,0);
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(27,58,92);
+  doc.text('Protocolo: '+ultimoProto,14,y);y+=9;doc.setTextColor(0,0,0);
+  doc.setFontSize(10);
+  function linha(l,v){
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text(l+': ',14,y);
+    doc.setFont(undefined,'normal');
+    var xv=14+doc.getTextWidth(l+': ');
+    var lines=doc.splitTextToSize(String(v||'—'),180-xv+14);
+    doc.text(lines,xv,y);y+=6*lines.length;
+  }
+  linha('Data',g('data'));
+  linha('Gerente',g('gerente'));
+  linha('Valor em dinheiro','R$ '+(parseFloat(g('valor-dinheiro'))||0).toFixed(2).replace('.',','));
+  linha('Status',statusAtual==='ok'?'Sem divergência':'Com divergência');
+  if(statusAtual==='erro'){
+    var ops=getOperadoresData();
+    ops.forEach(function(op,i){
+      y+=2;
+      doc.setFont(undefined,'bold');doc.text('Operador '+(i+1)+':',14,y);y+=6;
+      linha('Nome',op.nome);
+      if(op.valor)linha('Diferença','R$ '+(parseFloat(op.valor)||0).toFixed(2).replace('.',','));
+      if(op.motivo)linha('Motivo',op.motivo);
+    });
+  }
+  if(g('obs'))linha('Observações',g('obs'));
+  var todasFotos=fotosColibri.concat(fotosSocios);
+  if(todasFotos.length>0){
+    y+=4;if(y>240){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text('Evidências ('+todasFotos.length+' foto(s)):',14,y);y+=6;
+    todasFotos.slice(0,6).forEach(function(f){
+      if(y>230){doc.addPage();y=20;}
+      try{doc.addImage(f,'JPEG',14,y,58,44);y+=49;}catch(err){}
+    });
+  }
+  doc.setFontSize(8);doc.setTextColor(150);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR')+' — Bar Responsa',14,287);
+  return doc.output('datauristring').split(',')[1];
+}
+
+function gerarPDF(){
+  var doc=new jspdf.jsPDF({unit:'mm',format:'a4'});
+  var y=18;
+  doc.setFillColor(27,58,92);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15);doc.setFont(undefined,'bold');
+  doc.text('Bar Responsa — Fechamento de Caixa',14,13);
+  doc.setFontSize(10);doc.setFont(undefined,'normal');
+  doc.text('Registro de fechamento do gerente',14,21);
+  y=36;doc.setTextColor(0,0,0);
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(27,58,92);
+  doc.text('Protocolo: '+ultimoProto,14,y);y+=9;doc.setTextColor(0,0,0);
+  doc.setFontSize(10);
+  function linha(l,v){
+    if(y>270){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text(l+': ',14,y);
+    doc.setFont(undefined,'normal');
+    var xv=14+doc.getTextWidth(l+': ');
+    var lines=doc.splitTextToSize(String(v||'—'),180-xv+14);
+    doc.text(lines,xv,y);y+=6*lines.length;
+  }
+  linha('Data',g('data'));
+  linha('Gerente',g('gerente'));
+  linha('Valor em dinheiro','R$ '+(parseFloat(g('valor-dinheiro'))||0).toFixed(2).replace('.',','));
+  linha('Status',statusAtual==='ok'?'Sem divergência':'Com divergência');
+  if(statusAtual==='erro'){
+    var ops=getOperadoresData();
+    ops.forEach(function(op,i){
+      y+=2;doc.setFont(undefined,'bold');doc.text('Operador '+(i+1)+':',14,y);y+=6;
+      linha('Nome',op.nome);
+      if(op.valor)linha('Diferença','R$ '+(parseFloat(op.valor)||0).toFixed(2).replace('.',','));
+      if(op.motivo)linha('Motivo',op.motivo);
+    });
+  }
+  if(g('obs'))linha('Observações',g('obs'));
+  var todasFotos=fotosColibri.concat(fotosSocios);
+  if(todasFotos.length>0){
+    y+=4;if(y>240){doc.addPage();y=20;}
+    doc.setFont(undefined,'bold');doc.text('Evidências ('+todasFotos.length+' foto(s)):',14,y);y+=6;
+    todasFotos.slice(0,6).forEach(function(f){
+      if(y>230){doc.addPage();y=20;}
+      try{doc.addImage(f,'JPEG',14,y,58,44);y+=49;}catch(err){}
+    });
+  }
+  doc.setFontSize(8);doc.setTextColor(150);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR')+' — Bar Responsa',14,287);
+  doc.save('fechamento_'+ultimoProto+'_'+g('gerente').replace(/\s+/g,'_')+'.pdf');
+}
+
+function enviarSheets(){
+  var st=document.getElementById('sheets-status');
+  st.innerHTML='<i class="ti ti-loader"></i> Enviando para Google Sheets e Drive...';
+  var nomeArquivo='fechamento_'+ultimoProto+'_'+g('gerente').replace(/\s+/g,'_')+'.pdf';
+  var ops=getOperadoresData();
+  var pdfB64=gerarPDFbase64();
+  var payload={
+    origem:'fechamento',
+    protocolo:ultimoProto,
+    data:g('data'),
+    gerente:g('gerente'),
+    valorDinheiro:g('valor-dinheiro'),
+    status:statusAtual==='ok'?'Sem divergência':'Com divergência',
+    operadores:JSON.stringify(ops),
+    fotosColibriQtd:fotosColibri.length,
+    fotosSociosQtd:fotosSocios.length,
+    obs:g('obs'),
+    pdfBase64:pdfB64,
+    pdfNome:nomeArquivo
+  };
+  fetch(sheetsURL,{method:'POST',body:JSON.stringify(payload)})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.ok){
+        var msg='<span style="color:#1D9E75"><i class="ti ti-circle-check"></i> Salvo no Google Sheets</span>';
+        if(d.driveUrl)msg+='<br><a href="'+d.driveUrl+'" target="_blank" style="color:#185FA5;font-size:13px"><i class="ti ti-brand-google-drive"></i> Ver PDF no Drive</a>';
+        st.innerHTML=msg;
+      } else {
+        st.innerHTML='<span style="color:#E24B4A"><i class="ti ti-x"></i> Erro ao salvar.</span>';
+      }
+    })
+    .catch(function(){
+      st.innerHTML='<span style="color:#E24B4A"><i class="ti ti-x"></i> Não conectou ao Sheets.</span>';
+    });
+}
+
+function novoRegistro(){
+  document.getElementById('form-screen').style.display='block';
+  document.getElementById('success-screen').style.display='none';
+  document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(function(el){if(el.id!=='data')el.value='';});
+  document.querySelectorAll('input[type=radio]').forEach(function(el){el.checked=false;});
+  document.querySelectorAll('.radio-opt').forEach(function(el){el.className='radio-opt';});
+  statusAtual=null;fotosColibri=[];fotosSocios=[];operadores=[];opCount=0;ultimoProto='';
+  document.getElementById('sec-divergencia').style.display='none';
+  document.getElementById('lista-operadores').innerHTML='';
+  document.getElementById('prev-colibri').innerHTML='';
+  document.getElementById('prev-socios').innerHTML='';
+  document.getElementById('valor-display').style.display='none';
+  document.getElementById('sheets-status').innerHTML='';
+  document.getElementById('data').value=new Date().toISOString().split('T')[0];
+}
+</script>
+</body>
+</html>
